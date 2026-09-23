@@ -714,5 +714,9 @@
 
 #?(:bb nil
    :clj
-   (when (contains? (loaded-libs) 'clojure.pprint) ;; pprint was already loaded, e.g. by nREPL
+   ;; Never during AOT: compiling this namespace while clojure.pprint is
+   ;; loaded made this require a cyclic load (pprint extension requires
+   ;; this namespace back). Load-time convenience only.
+   (when (and (not *compile-files*)
+              (contains? (loaded-libs) 'clojure.pprint)) ;; pprint was already loaded, e.g. by nREPL
      (require '[babashka.process.pprint])))
